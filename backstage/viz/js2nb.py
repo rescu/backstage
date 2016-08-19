@@ -8,7 +8,7 @@ import jinja2
 import json
 from IPython.display import HTML
 
-def inject_d3js(d3js_filename, style=None, d3js_template_options={}, local_d3_install=None):
+def inject_d3js(d3js_filename, style=None, d3js_template_options={}, local_d3_install=None, return_string=False):
     """
     Take in the filename of the D3.js script, assumed to be a Jinja2 template,
     and generate the necessary HTML, plus styling if selected, to display in a
@@ -33,7 +33,7 @@ def inject_d3js(d3js_filename, style=None, d3js_template_options={}, local_d3_in
     
     #grab the templates
     gen_template = env.get_template('inject_d3js.html')
-    d3js_template = env.get_template(d3js_filename)
+    d3js_template = env.get_template(os.path.basename(d3js_filename))
     
     #render the d3js file
     d3js_text = d3js_template.render(object_id='d3DummyId',**d3js_template_options)
@@ -41,5 +41,8 @@ def inject_d3js(d3js_filename, style=None, d3js_template_options={}, local_d3_in
     #render the general template
     gen_text = gen_template.render(object_id='d3DummyId', style_sheet=style, path_to_d3=path_to_d3, d3js_text=d3js_text)
     
-    return gen_text
+    if return_string:
+        return gen_text
+    else:
+        return HTML(gen_text)
     
